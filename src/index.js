@@ -11,6 +11,7 @@ export default {
     // Required - must be implemented
     // Browser control
     async openBrowser (id, pageUrl, browserName) {
+
         const browserArgs = browserName.split(':');
         if (!this.browser) {
             const launchArgs = {
@@ -32,6 +33,8 @@ export default {
                     launchArgs.executablePath = executablePath;
             }
             this.browser = await puppeteer.launch(launchArgs);
+            const context = this.browser.defaultBrowserContext();
+            await context.overridePermissions("http://localhost:3000", ["notifications"]);
         }
 
         const page = await this.browser.newPage();
@@ -42,7 +45,7 @@ export default {
           const [, emulationDevice] = emulationArg.split('=');
           const device = puppeteer.devices[emulationDevice];
 
-          if (!device) throw new Error('Emulation device is not supported'); 
+          if (!device) throw new Error('Emulation device is not supported');
 
           await page.emulate(device);
         }
